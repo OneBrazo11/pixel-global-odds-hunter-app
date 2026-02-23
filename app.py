@@ -22,7 +22,6 @@ st.markdown("### 📡 Radar de Apuestas: Búsqueda de Valor y Arbitraje.")
 
 # --- BARRA LATERAL (API KEY) ---
 st.sidebar.header("🔑 Llave de Acceso")
-api_key = st.sidebar.text_input("Tu API Key:", type="password")
 
 if not api_key:
     st.warning("👈 Ingresa tu API Key en la barra lateral y presiona Enter.")
