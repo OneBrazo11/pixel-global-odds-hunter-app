@@ -18,7 +18,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("🚀 GLOBAL ODDS HUNTER")
-st.markdown("### 📡 Radar de Apuestas: Búsqueda de Valor y Arbitraje.")
+st.markdown("### 📡 🚀 GLOBAL ODDS HUNTER: Búsqueda de Valor y Arbitraje.")
 
 # --- BARRA LATERAL (API KEY) ---
 st.sidebar.header("🔑 Llave de Acceso")
@@ -61,7 +61,7 @@ col2.metric("📉 Créditos Usados", used)
 col3.info("💡 Consejo: Usa el selector de Periodo para ahorrar créditos.")
 
 if str(rem) == "0":
-    st.error("⛔ SALDO AGOTADO. Crea una cuenta nueva.")
+    st.error("⛔ SALDO AGOTADO.")
     st.stop()
 
 st.sidebar.markdown("---")
