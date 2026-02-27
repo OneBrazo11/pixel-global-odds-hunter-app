@@ -36,7 +36,7 @@ if "autenticado" not in st.session_state:
 # --- MURO DE PAGO ---
 if not st.session_state.autenticado:
     st.title("🔒 Acceso a PIXEL GLOBAL ODDS HUNTER")
-    licencia_input = st.text_input("Introduce tu Licencia Whop (Ej: USER-001):", type="password")
+    licencia_input = st.text_input("Introduce tu Licencia (Ej: USER-001):", type="password")
     
     if st.button("Ingresar", type="primary"):
         df = pd.DataFrame(sheet.get_all_records())
@@ -69,7 +69,7 @@ else:
     # PESTAÑA 1: ESCÁNER
     # ==========================
     with tab1:
-        st.markdown("### 📡 Radar de Apuestas: Búsqueda de Valor y Arbitraje.")
+        st.markdown("### 📡 Pixel - Radar de Apuestas: Búsqueda de Valor y Arbitraje.")
         
         def get_active_sports(key):
             try: return requests.get(f"https://api.the-odds-api.com/v4/sports?apiKey={key}").json()
@@ -99,20 +99,36 @@ else:
                 selected_sport_name = st.sidebar.selectbox("Elige:", filtered_options)
                 selected_sport_key = sport_options[selected_sport_name]
 
-                bet_type = st.sidebar.selectbox("Tipo de Apuesta:", ["Ganador (Moneyline)", "Hándicap (Spread)", "Totales (Over/Under)", "Par / Impar (Even/Odd)"])
-                period_type = st.sidebar.selectbox("Periodo:", ["Partido Completo", "1ra Mitad (1H)", "2da Mitad (2H)"])
+                # NUEVOS MERCADOS AÑADIDOS
+                bet_type = st.sidebar.selectbox("Tipo de Apuesta:", [
+                    "Ganador (Moneyline)", "Hándicap (Spread)", "Totales (Over/Under)", 
+                    "Par / Impar (Even/Odd)", "Doble Oportunidad (Double Chance)", "Empate No Válido (Draw No Bet)"
+                ])
+                period_type = st.sidebar.selectbox("Periodo:", [
+                    "Partido Completo", "1ra Mitad (1H)", "2da Mitad (2H)", 
+                    "1er Cuarto (1Q)", "2do Cuarto (2Q)", "3er Cuarto (3Q)", "4to Cuarto (4Q)"
+                ])
 
+                # MAPEADO DE API CON NUEVOS MERCADOS
                 api_market = "h2h"
                 if "Hándicap" in bet_type: api_market = "spreads"
                 elif "Totales" in bet_type: api_market = "totals"
                 elif "Par / Impar" in bet_type: api_market = "even_odd"
+                elif "Doble Oportunidad" in bet_type: api_market = "double_chance"
+                elif "Empate No Válido" in bet_type: api_market = "draw_no_bet"
 
                 if "1ra Mitad" in period_type: api_market += "_h1"
                 elif "2da Mitad" in period_type: api_market += "_h2"
+                elif "1er Cuarto" in period_type: api_market += "_q1"
+                elif "2do Cuarto" in period_type: api_market += "_q2"
+                elif "3er Cuarto" in period_type: api_market += "_q3"
+                elif "4to Cuarto" in period_type: api_market += "_q4"
+
+                st.sidebar.info(f"🔎 Mercado Interno: **{api_market}**")
 
                 if st.button("🚀 BUSCAR CUOTAS (-1 Crédito)", type="primary"):
                     if st.session_state.creditos <= 0:
-                        st.error("No tienes créditos.")
+                        st.error("No tienes créditos suficientes.")
                     else:
                         with st.spinner("Descontando crédito y buscando cuotas..."):
                             cell = sheet.find(st.session_state.licencia)
@@ -163,7 +179,6 @@ else:
                                                 with cols[idx % len(cols)]:
                                                     st.markdown(f"<div class='success-box'>**{selection}**<br><span class='best-price'>💎 {max_odd}</span><br><small>{best_books}</small></div>", unsafe_allow_html=True)
                                             
-                                            # --- TABLA DETALLADA RESTAURADA ---
                                             all_rows = [{'Selección': sel, 'Casa': e['Casa'], 'Cuota': e['Cuota']} for sel, entries in odds_pool.items() for e in entries]
                                             if all_rows:
                                                 try:
